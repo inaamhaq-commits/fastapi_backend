@@ -1,0 +1,38 @@
+[project]
+name = "linkedin"
+version = "0.1.0"
+description = "FastAPI scaffold for the LinkedIn project"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "apify-client>=1.8.1",
+    "alembic>=1.16.0",
+    "boto3>=1.35.0",
+    "fastapi[standard]>=0.141.1",
+    "openai>=1.99.0",
+    "psycopg[binary]>=3.2.9",
+    "pydantic-settings>=2.10.1",
+    "pypdf>=5.0.0",
+    "python-docx>=1.1.2",
+    "qdrant-client>=1.12.0",
+    "redis[hiredis]",
+    "sqlalchemy>=2.0.43",
+]
+
+[project.scripts]
+linkedin = "linkedin.__main__:main"
+linkedin-workers = "linkedin.workers.runner:main"
+linkedin-knowledge-worker = "linkedin.knowledge_worker_entrypoint:main"
+linkedin-seed-users = "linkedin.seed_users:main"
+
+[tool.fastapi]
+entrypoint = "linkedin.main:app"
+
+[build-system]
+requires = ["uv_build>=0.12.0,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "httpx2>=2.10.0",
+]
