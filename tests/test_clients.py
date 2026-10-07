@@ -824,3 +824,28 @@ class ClientRouteTests(unittest.TestCase):
         response = self.client.get("/api/v1/clients")
 
         self.assertEqual(response.status_code, 401)
+
+    @patch("linkedin.api.routes.clients.list_client_profiles")
+    @patch("linkedin.api.deps.get_user_by_id")
+    @patch("linkedin.api.deps.decode_jwt_token")
+    def test_list_clients_accepts_bearer_access_token(
+        self,
+        mock_decode_jwt_token,
+        mock_get_user_by_id,
+        mock_list_client_profiles,
+    ) -> None:
+        user = SimpleNamespace(id="12345678-1234-5678-1234-567812345678")
+        mock_decode_jwt_token.return_value = {"sub": user.id}
+        mock_get_user_by_id.return_value = user
+        mock_list_client_profiles.return_value = []
+
+        response = self.client.get(
+            "/api/v1/clients",
+            headers={"Authorization": "Bearer access-123"},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        mock_decode_jwt_token.assert_called_once_with(
+            "access-123",
+            expected_type="access",
+        )

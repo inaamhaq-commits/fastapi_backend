@@ -16,6 +16,7 @@ class ProjectServiceTests(unittest.TestCase):
                 id="11111111-1111-1111-1111-111111111111",
                 filename="Healthcare Policy.pdf",
                 label="healthcare-policy",
+                content_type="application/pdf",
                 bucket="knowledge-base",
                 object_key="",
             ),
@@ -23,6 +24,7 @@ class ProjectServiceTests(unittest.TestCase):
                 id="22222222-2222-2222-2222-222222222222",
                 filename="Fintech FAQ.docx",
                 label="fintech-faq",
+                content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 bucket="knowledge-base",
                 object_key="",
             ),
@@ -72,14 +74,12 @@ class ProjectServiceTests(unittest.TestCase):
         self.assertEqual(mock_create_file.call_args_list[1].kwargs["label"], "fintech-faq")
         db.commit.assert_called_once()
 
-    @patch("linkedin.services.projects.enqueue_knowledge_ingestion")
     @patch("linkedin.services.projects.mark_project_files_uploaded")
     @patch("linkedin.services.projects.get_project_for_user")
-    def test_complete_project_upload_enqueues_each_file(
+    def test_complete_project_upload_marks_files_uploaded_without_redis(
         self,
         mock_get_project_for_user,
         mock_mark_project_files_uploaded,
-        mock_enqueue_knowledge_ingestion,
     ) -> None:
         db = Mock()
         user = SimpleNamespace(id="12345678-1234-5678-1234-567812345678")
@@ -100,13 +100,7 @@ class ProjectServiceTests(unittest.TestCase):
         )
 
         self.assertIs(result, project)
-        self.assertEqual(mock_enqueue_knowledge_ingestion.call_count, 2)
-        mock_enqueue_knowledge_ingestion.assert_any_call(
-            project_file_id="11111111-1111-1111-1111-111111111111"
-        )
-        mock_enqueue_knowledge_ingestion.assert_any_call(
-            project_file_id="22222222-2222-2222-2222-222222222222"
-        )
+        mock_mark_project_files_uploaded.assert_called_once_with(db, project)
 
 
 if __name__ == "__main__":

@@ -26,6 +26,7 @@ def _start_worker_process(name: str, target: WorkerTarget) -> multiprocessing.Pr
 
 
 def run_all_workers() -> None:
+    raise RuntimeError("Redis-backed workers are disabled for this deployment.")
     logging.basicConfig(level=logging.INFO)
     processes = [
         _start_worker_process("glassdoor-worker", run_glassdoor_worker),

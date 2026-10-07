@@ -5,7 +5,6 @@ from urllib.parse import quote
 
 from sqlalchemy.orm import Session
 
-from linkedin.cache.redis import enqueue_knowledge_ingestion
 from linkedin.core.config import settings
 from linkedin.db.models.knowledge_project import KnowledgeProject
 from linkedin.db.models.user import User
@@ -116,8 +115,8 @@ def complete_project_upload(
         return None
 
     project = mark_project_files_uploaded(db, project)
-    for project_file in project.files:
-        enqueue_knowledge_ingestion(project_file_id=project_file.id)
+    # Redis queueing is disabled for the low-user deployment.
+    # Knowledge files remain marked as uploaded and can be processed manually.
     return project
 
 

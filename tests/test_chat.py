@@ -166,7 +166,6 @@ class ChatServiceTests(unittest.TestCase):
 
         self.assertEqual(payload.message, "Find product manager roles")
 
-    @patch("linkedin.services.chat.enqueue_actor_task")
     @patch("linkedin.services.chat.create_actor_task_record")
     @patch("linkedin.services.chat.generate_actor_tasks")
     @patch("linkedin.services.chat.create_chat_job_record")
@@ -175,7 +174,6 @@ class ChatServiceTests(unittest.TestCase):
         mock_create_chat_job_record,
         mock_generate_actor_tasks,
         mock_create_actor_task_record,
-        mock_enqueue_actor_task,
     ) -> None:
         db = Mock()
         chat_job = Mock()
@@ -218,30 +216,15 @@ class ChatServiceTests(unittest.TestCase):
         self.assertEqual(chat_job.normalized_query, "software engineer remote")
         self.assertEqual(chat_job.status, JobStatus.QUEUED.value)
         self.assertEqual(mock_create_actor_task_record.call_count, 3)
-        self.assertEqual(mock_enqueue_actor_task.call_count, 3)
-        self.assertEqual(
-            mock_enqueue_actor_task.call_args_list[0].kwargs["actor_key"],
-            "glassdoor_jobs",
-        )
-        self.assertEqual(
-            mock_enqueue_actor_task.call_args_list[1].kwargs["actor_key"],
-            "wellfound_jobs",
-        )
-        self.assertEqual(
-            mock_enqueue_actor_task.call_args_list[2].kwargs["actor_key"],
-            "workable_jobs",
-        )
 
-    @patch("linkedin.services.chat.enqueue_actor_task")
     @patch("linkedin.services.chat.create_actor_task_record")
     @patch("linkedin.services.chat.generate_actor_tasks")
     @patch("linkedin.services.chat.create_chat_job_record")
-    def test_create_chat_job_marks_created_tasks_failed_on_enqueue_error(
+    def test_create_chat_job_marks_created_tasks_failed_on_task_error(
         self,
         mock_create_chat_job_record,
         mock_generate_actor_tasks,
         mock_create_actor_task_record,
-        mock_enqueue_actor_task,
     ) -> None:
         db = Mock()
         chat_job = Mock()
@@ -274,13 +257,11 @@ class ChatServiceTests(unittest.TestCase):
             actor_key="wellfound_jobs",
             status=ActorTaskStatus.QUEUED.value,
         )
-        third_task = Mock(
-            id="workable-task-id",
-            actor_key="workable_jobs",
-            status=ActorTaskStatus.QUEUED.value,
-        )
-        mock_create_actor_task_record.side_effect = [first_task, second_task, third_task]
-        mock_enqueue_actor_task.side_effect = [None, None, RuntimeError("redis failed")]
+        mock_create_actor_task_record.side_effect = [
+            first_task,
+            second_task,
+            RuntimeError("task create failed"),
+        ]
 
         with self.assertRaises(RuntimeError):
             create_chat_job(
@@ -289,6 +270,5 @@ class ChatServiceTests(unittest.TestCase):
             )
 
         self.assertEqual(chat_job.status, JobStatus.FAILED.value)
-        self.assertEqual(chat_job.error, "redis failed")
+        self.assertEqual(chat_job.error, "task create failed")
         self.assertEqual(second_task.status, ActorTaskStatus.FAILED.value)
-        self.assertEqual(third_task.status, ActorTaskStatus.FAILED.value)

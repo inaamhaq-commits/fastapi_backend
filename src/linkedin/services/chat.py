@@ -1,6 +1,5 @@
 from sqlalchemy.orm import Session
 
-from linkedin.cache.redis import enqueue_actor_task
 from linkedin.core.enums import ActorTaskStatus, JobStatus
 from linkedin.integrations.openai.planner import generate_actor_tasks
 from linkedin.repositories.actor_tasks import create_actor_task as create_actor_task_record
@@ -45,10 +44,8 @@ def create_chat_job(db: Session, payload: ChatRequest) -> ChatJobResponse:
                 actor_input_json=planned_task.actor_input,
             )
             actor_tasks.append(actor_task)
-            enqueue_actor_task(
-                actor_task_id=actor_task.id,
-                actor_key=actor_task.actor_key,
-            )
+            # Redis queueing is disabled for the low-user deployment.
+            # Actor task records remain queued in the database.
     except Exception as exc:
         chat_job.status = JobStatus.FAILED.value
         chat_job.error = str(exc)

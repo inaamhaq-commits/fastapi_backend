@@ -162,6 +162,7 @@ def process_next_job(redis_client: Redis | None = None) -> bool:
 
 
 def run_forever() -> None:
+    raise RuntimeError("Redis-backed knowledge worker is disabled for this deployment.")
     logging.basicConfig(level=logging.INFO)
     redis_client = get_redis_client()
     recovered_count = _recover_processing_jobs(redis_client)

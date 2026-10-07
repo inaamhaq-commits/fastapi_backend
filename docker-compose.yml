@@ -1,11 +1,12 @@
 services:
 
-  redis:
-    image: redis:latest
-    container_name: redis
-    ports:
-      - "6379:6379"
-    restart: unless-stopped
+  # Redis queueing is disabled for the low-user deployment.
+  # redis:
+  #   image: redis:latest
+  #   container_name: redis
+  #   ports:
+  #     - "6379:6379"
+  #   restart: unless-stopped
 
   qdrant:
     image: qdrant/qdrant:latest

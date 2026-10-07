@@ -63,31 +63,32 @@ class Settings(BaseSettings):
         default=False,
         validation_alias="DATABASE_FAIL_FAST",
     )
-    redis_url: str | None = Field(default=None, validation_alias="REDIS_URL")
-    knowledge_queue_name: str = Field(
-        default="queue:knowledge-ingestion",
-        validation_alias="KNOWLEDGE_QUEUE_NAME",
-    )
-    knowledge_processing_queue_name: str = Field(
-        default="queue:knowledge-ingestion:processing",
-        validation_alias="KNOWLEDGE_PROCESSING_QUEUE_NAME",
-    )
-    knowledge_dead_letter_queue_name: str = Field(
-        default="queue:knowledge-ingestion:dead-letter",
-        validation_alias="KNOWLEDGE_DEAD_LETTER_QUEUE_NAME",
-    )
-    knowledge_worker_poll_seconds: float = Field(
-        default=2.0,
-        validation_alias="KNOWLEDGE_WORKER_POLL_SECONDS",
-    )
-    knowledge_worker_max_attempts: int = Field(
-        default=3,
-        validation_alias="KNOWLEDGE_WORKER_MAX_ATTEMPTS",
-    )
-    knowledge_requeue_dead_letter_on_startup: bool = Field(
-        default=True,
-        validation_alias="KNOWLEDGE_REQUEUE_DEAD_LETTER_ON_STARTUP",
-    )
+    # Redis queueing is disabled for the low-user deployment.
+    # redis_url: str | None = Field(default=None, validation_alias="REDIS_URL")
+    # knowledge_queue_name: str = Field(
+    #     default="queue:knowledge-ingestion",
+    #     validation_alias="KNOWLEDGE_QUEUE_NAME",
+    # )
+    # knowledge_processing_queue_name: str = Field(
+    #     default="queue:knowledge-ingestion:processing",
+    #     validation_alias="KNOWLEDGE_PROCESSING_QUEUE_NAME",
+    # )
+    # knowledge_dead_letter_queue_name: str = Field(
+    #     default="queue:knowledge-ingestion:dead-letter",
+    #     validation_alias="KNOWLEDGE_DEAD_LETTER_QUEUE_NAME",
+    # )
+    # knowledge_worker_poll_seconds: float = Field(
+    #     default=2.0,
+    #     validation_alias="KNOWLEDGE_WORKER_POLL_SECONDS",
+    # )
+    # knowledge_worker_max_attempts: int = Field(
+    #     default=3,
+    #     validation_alias="KNOWLEDGE_WORKER_MAX_ATTEMPTS",
+    # )
+    # knowledge_requeue_dead_letter_on_startup: bool = Field(
+    #     default=True,
+    #     validation_alias="KNOWLEDGE_REQUEUE_DEAD_LETTER_ON_STARTUP",
+    # )
     minio_endpoint_url: str | None = Field(
         default=None,
         validation_alias="MINIO_ENDPOINT_URL",
@@ -144,10 +145,10 @@ class Settings(BaseSettings):
         default="5OaooRg0FxlRF0L1B",
         validation_alias="GLASSDOOR_ACTOR_ID",
     )
-    glassdoor_queue_name: str = Field(
-        default="queue:actors",
-        validation_alias="GLASSDOOR_QUEUE_NAME",
-    )
+    # glassdoor_queue_name: str = Field(
+    #     default="queue:actors",
+    #     validation_alias="GLASSDOOR_QUEUE_NAME",
+    # )
     glassdoor_source_site: str = Field(
         default="glassdoor",
         validation_alias="GLASSDOOR_SOURCE_SITE",
@@ -156,10 +157,10 @@ class Settings(BaseSettings):
         default="jV4Y8h6j3AqVj5Qur",
         validation_alias="WELLFOUND_ACTOR_ID",
     )
-    wellfound_queue_name: str = Field(
-        default="queue:wellfound-actors",
-        validation_alias="WELLFOUND_QUEUE_NAME",
-    )
+    # wellfound_queue_name: str = Field(
+    #     default="queue:wellfound-actors",
+    #     validation_alias="WELLFOUND_QUEUE_NAME",
+    # )
     wellfound_source_site: str = Field(
         default="wellfound",
         validation_alias="WELLFOUND_SOURCE_SITE",
@@ -168,10 +169,10 @@ class Settings(BaseSettings):
         default="hXENKfdQC3e6E9ecv",
         validation_alias="WORKABLE_ACTOR_ID",
     )
-    workable_queue_name: str = Field(
-        default="queue:workable-actors",
-        validation_alias="WORKABLE_QUEUE_NAME",
-    )
+    # workable_queue_name: str = Field(
+    #     default="queue:workable-actors",
+    #     validation_alias="WORKABLE_QUEUE_NAME",
+    # )
     workable_source_site: str = Field(
         default="workable",
         validation_alias="WORKABLE_SOURCE_SITE",
